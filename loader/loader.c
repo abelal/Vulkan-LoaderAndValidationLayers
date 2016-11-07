@@ -1644,6 +1644,8 @@ static bool loader_icd_init_entrys(struct loader_icd_term *icd_term,
     LOOKUP_GIPA(GetPhysicalDeviceSparseImageFormatProperties, true);
     LOOKUP_GIPA(CreateDebugReportCallbackEXT, false);
     LOOKUP_GIPA(DestroyDebugReportCallbackEXT, false);
+    LOOKUP_GIPA(DebugMarkerSetObjectTagEXT, false);
+    LOOKUP_GIPA(DebugMarkerSetObjectNameEXT, false);
     LOOKUP_GIPA(GetPhysicalDeviceSurfaceSupportKHR, false);
     LOOKUP_GIPA(GetPhysicalDeviceSurfaceCapabilitiesKHR, false);
     LOOKUP_GIPA(GetPhysicalDeviceSurfaceFormatsKHR, false);
@@ -3283,6 +3285,16 @@ void loader_override_terminating_device_proc(
             device, "vkCreateSwapchainKHR")) {
         disp_table->core_dispatch.CreateSwapchainKHR =
             terminator_vkCreateSwapchainKHR;
+    } else if ((PFN_vkVoidFunction)disp_table->core_dispatch.DebugMarkerSetObjectTagEXT ==
+        (PFN_vkVoidFunction)icd_term->GetDeviceProcAddr(
+            device, "vkDebugMarkerSetObjectTagEXT")) {
+        disp_table->core_dispatch.DebugMarkerSetObjectTagEXT =
+            terminator_DebugMarkerSetObjectTagEXT;
+    } else if ((PFN_vkVoidFunction)disp_table->core_dispatch.DebugMarkerSetObjectNameEXT ==
+        (PFN_vkVoidFunction)icd_term->GetDeviceProcAddr(
+            device, "vkDebugMarkerSetObjectNameEXT")) {
+        disp_table->core_dispatch.DebugMarkerSetObjectNameEXT =
+            terminator_DebugMarkerSetObjectNameEXT;
     }
 }
 
@@ -3298,6 +3310,10 @@ loader_gpa_device_internal(VkDevice device, const char *pName) {
     // along to the ICD.
     if (!strcmp(pName, "vkCreateSwapchainKHR")) {
         return (PFN_vkVoidFunction)terminator_vkCreateSwapchainKHR;
+    } else if (!strcmp(pName, "vkDebugMarkerSetObjectTagEXT")) {
+        return (PFN_vkVoidFunction)terminator_DebugMarkerSetObjectTagEXT;
+    } else if (!strcmp(pName, "vkDebugMarkerSetObjectNameEXT")) {
+        return (PFN_vkVoidFunction)terminator_DebugMarkerSetObjectNameEXT;
     }
 
     return icd_term->GetDeviceProcAddr(device, pName);

@@ -546,6 +546,7 @@ loader_lookup_device_dispatch_table(const VkLayerDispatchTable *table,
         // functions to properly unwrap the SurfaceKHR object.
         return (void *)vkCreateSwapchainKHR;
     }
+
     if (!strcmp(name, "DestroySwapchainKHR"))
         return (void *)table->DestroySwapchainKHR;
     if (!strcmp(name, "GetSwapchainImagesKHR"))
@@ -554,6 +555,16 @@ loader_lookup_device_dispatch_table(const VkLayerDispatchTable *table,
         return (void *)table->AcquireNextImageKHR;
     if (!strcmp(name, "QueuePresentKHR"))
         return (void *)table->QueuePresentKHR;
+
+    if (!strcmp(name, "vkDebugMarkerSetObjectTagEXT")) {
+        // For vkDebugMarkerSetObjectTagEXT we need to use trampoline and
+        // terminator functions to properly unwrap the SurfaceKHR object.
+        return (void *)vkDebugMarkerSetObjectTagEXT;
+    } else if (!strcmp(name, "vkDebugMarkerSetObjectNameEXT")) {
+        // For vkDebugMarkerSetObjectNameEXT we need to use trampoline and
+        // terminator functions to properly unwrap the SurfaceKHR object.
+        return (void *)vkDebugMarkerSetObjectNameEXT;
+    }
 
     return NULL;
 }
