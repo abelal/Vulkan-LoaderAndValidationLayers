@@ -3276,10 +3276,11 @@ void loader_override_terminating_device_proc(
     struct loader_icd_term *icd_term =
         loader_get_icd_and_device(device, &dev, NULL);
 
-    // Certain device entry-points still need to go through a terminator before
-    // hitting the ICD.  This could be for several reasons, but the main one
-    // is currently unwrapping an object before passing the appropriate info
-    // along to the ICD.
+    // Overrides for device functions needing a trampoline and
+    // a terminatorbecause ertain device entry-points still need to go
+    // through a terminator before hitting the ICD.  This could be for
+    // several reasons, but the main one is currently unwrapping an
+    // object before passing the appropriate info along to the ICD.
     if ((PFN_vkVoidFunction)disp_table->core_dispatch.CreateSwapchainKHR ==
         (PFN_vkVoidFunction)icd_term->GetDeviceProcAddr(
             device, "vkCreateSwapchainKHR")) {
@@ -3304,10 +3305,11 @@ loader_gpa_device_internal(VkDevice device, const char *pName) {
     struct loader_icd_term *icd_term =
         loader_get_icd_and_device(device, &dev, NULL);
 
-    // Certain device entry-points still need to go through a terminator before
-    // hitting the ICD.  This could be for several reasons, but the main one
-    // is currently unwrapping an object before passing the appropriate info
-    // along to the ICD.
+    // Overrides for device functions needing a trampoline and
+    // a terminatorbecause ertain device entry-points still need to go
+    // through a terminator before hitting the ICD.  This could be for
+    // several reasons, but the main one is currently unwrapping an
+    // object before passing the appropriate info along to the ICD.
     if (!strcmp(pName, "vkCreateSwapchainKHR")) {
         return (PFN_vkVoidFunction)terminator_vkCreateSwapchainKHR;
     } else if (!strcmp(pName, "vkDebugMarkerSetObjectTagEXT")) {
