@@ -65,7 +65,6 @@ static inline void RemoveDebugMessageCallback(debug_report_data *debug_data, VkL
     VkLayerDbgFunctionNode *prev_callback = cur_callback;
     bool matched = false;
 
-    debug_data->active_flags = 0;
     while (cur_callback) {
         if (cur_callback->msgCallback == callback) {
             matched = true;
@@ -73,9 +72,11 @@ static inline void RemoveDebugMessageCallback(debug_report_data *debug_data, VkL
             if (*list_head == cur_callback) {
                 *list_head = cur_callback->pNext;
             }
+            debug_data->active_flags = cur_callback->msgFlags;
             debug_report_log_msg(debug_data, VK_DEBUG_REPORT_DEBUG_BIT_EXT, VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT,
                                  reinterpret_cast<uint64_t &>(cur_callback->msgCallback), 0, VK_DEBUG_REPORT_ERROR_CALLBACK_REF_EXT,
-                                 "DebugReport", "Destroyed callback");
+                                 "DebugReport", "Destroyed callback\n");
+            debug_data->active_flags = 0;
         } else {
             matched = false;
             debug_data->active_flags |= cur_callback->msgFlags;
